@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>I'm Sorry ❤️</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    text-align: center;
+    background: black;
+}
+
+/* VIDEO */
+video {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+/* overlay */
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    z-index: -1;
+}
+
+/* start screen */
+#startScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+#startScreen h2 {
+    font-size: 40px;
+    margin-bottom: 30px;
+    color: #ff4d6d;
+    font-family: 'Cursive', sans-serif;
+}
+
+#startScreen button {
+    padding: 15px 40px;
+    font-size: 24px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    background: #ff4d6d;
+    color: white;
+}
+
+/* content */
+.content {
+    position: relative;
+    top: 20%;
+    display: none;
+}
+
+h1 {
+    font-size: 50px;
+}
+
+/* typing text */
+#typing {
+    font-size: 22px;
+    border-right: 2px solid white;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* buttons */
+button.actionBtn {
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+#yesBtn {
+    background: white;
+    color: #ff4d6d;
+}
+
+#noBtn {
+    background: #ff4d6d;
+    color: white;
+    position: absolute;
+}
+
+/* hearts */
+.heart {
+    position: absolute;
+    color: red;
+    animation: float 5s linear infinite;
+}
+
+@keyframes float {
+    0% {transform: translateY(100vh);}
+    100% {transform: translateY(-10vh);}
+}
+
+/* popup animation */
+#popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(255,255,255,0.95);
+    color: #ff4d6d;
+    padding: 30px 50px;
+    font-size: 28px;
+    border-radius: 20px;
+    z-index: 10;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+#popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+</style>
+</head>
+
+<body>
+
+<!-- start screen -->
+<div id="startScreen">
+    <h2>දෙයක් කියන්න එන්නකො සුදූ.....🥺❤️</h2>
+    <button id="goBtn">Go</button>
+</div>
+
+<video id="bgVideo"></video>
+<div class="overlay"></div>
+
+<div class="content">
+<h1>I'm Really Sorry Manika 😔❤️</h1>
+<p id="typing"></p>
+
+<br>
+<button id="yesBtn" class="actionBtn" onclick="yesClick()">Yes 🥺</button>
+<button id="noBtn" class="actionBtn">No 😒</button>
+</div>
+
+<!-- popup message -->
+<div id="popup">Aww 🥺❤️ Thank you!! I love you forever 💖</div>
+
+<!-- YES music -->
+<audio id="yesAudio" src="yes-music.mp3" loop></audio>
+
+<script>
+// VIDEO LIST
+const videos = ["video1.mp4", "video2.mp4"];
+let current = 0;
+const video = document.getElementById("bgVideo");
+
+// GO BUTTON
+const goBtn = document.getElementById("goBtn");
+goBtn.addEventListener("click", () => {
+    document.getElementById("startScreen").style.display = "none";
+    document.querySelector(".content").style.display = "block";
+
+    // play first video with audio
+    video.src = videos[current];
+    video.muted = false;
+    video.volume = 0; // start fade-in
+    video.play();
+
+    fadeAudio(video, 0, 1, 2000); // fade-in video audio
+
+    // start typing and hearts
+    typing();
+    setInterval(createHeart, 300);
+});
+
+// smooth fade switch for videos
+video.addEventListener("ended", () => {
+    fadeOutVideo(video, 1000, () => {
+        current = (current + 1) % videos.length;
+        video.src = videos[current];
+        video.play();
+        fadeInVideo(video, 1000);
+    });
+});
+
+// TYPING EFFECT
+const text = "Sudu nona... please forgive me 🥺💖 I love you so much...";
+let i = 0;
+function typing() {
+    if (i < text.length) {
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, 50);
+    }
+}
+
+// hearts
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+}
+
+// YES
+function yesClick() {
+    const yesAudio = document.getElementById("yesAudio");
+    const fadeDuration = 2000;
+
+    // fade out video audio
+    fadeAudio(video, video.volume, 0, fadeDuration, () => video.muted = true);
+
+    // play Yes music with fade-in
+    yesAudio.volume = 0;
+    yesAudio.play();
+    fadeAudio(yesAudio, 0, 1, fadeDuration);
+
+    const popup = document.getElementById("popup");
+    popup.classList.add("show");
+}
+
+// NO move
+const noBtn = document.getElementById("noBtn");
+noBtn.addEventListener("mouseover", moveButton);
+noBtn.addEventListener("click", moveButton);
+
+function moveButton() {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+// AUDIO FADE FUNCTIONS
+function fadeAudio(audioEl, from, to, duration, callback) {
+    const stepTime = 50;
+    const steps = duration / stepTime;
+    let currentStep = 0;
+    const step = (to - from) / steps;
+
+    audioEl.volume = from;
+    const fadeInterval = setInterval(() => {
+        currentStep++;
+        audioEl.volume = Math.min(Math.max(audioEl.volume + step, 0), 1);
+        if (currentStep >= steps) {
+            clearInterval(fadeInterval);
+            if (callback) callback();
+        }
+    }, stepTime);
+}
+
+// VIDEO FADE IN/OUT
+function fadeOutVideo(videoEl, duration, callback) {
+    videoEl.style.transition = `opacity ${duration}ms`;
+    videoEl.style.opacity = 0;
+    setTimeout(() => { if(callback) callback(); }, duration);
+}
+
+function fadeInVideo(videoEl, duration) {
+    videoEl.style.transition = `opacity ${duration}ms`;
+    videoEl.style.opacity = 1;
+}
+</script>
+</body>
+</html>
